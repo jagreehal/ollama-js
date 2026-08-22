@@ -9,6 +9,9 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     environment: release
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,6 +24,6 @@ jobs:
         run: echo "export const version = '${GITHUB_REF_NAME#v}';" > src/version.ts
       - run: |
           npm version --no-git-tag-version ${GITHUB_REF_NAME#v}
-          npm publish
+          npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}

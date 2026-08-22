@@ -1,11 +1,17 @@
 # Ollama JavaScript Library
 
+> [!IMPORTANT]
+> This branch publishes `@jagreehal/ollama`, an unofficial compatibility fork
+> used by `ai-sdk-ollama`. Upstream remains
+> [`ollama/ollama-js`](https://github.com/ollama/ollama-js). Fixes should be
+> proposed upstream whenever possible; see [MAINTAINING.md](./MAINTAINING.md).
+
 The Ollama JavaScript library provides the easiest way to integrate your JavaScript project with [Ollama](https://github.com/jmorganca/ollama).
 
 ## Getting Started
 
-```
-npm i ollama
+```shell
+npm install ollama@npm:@jagreehal/ollama
 ```
 
 ## Usage
