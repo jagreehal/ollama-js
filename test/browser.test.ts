@@ -97,7 +97,8 @@ describe('Ollama image generation request fields', () => {
       prompt_eval_duration: 50,
       eval_count: 0,
       eval_duration: 0,
-      image: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+      image:
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
     }
 
     const client = new Ollama()
@@ -140,5 +141,62 @@ describe('Ollama image generation request fields', () => {
     expect(response.completed).toBe(5)
     expect(response.total).toBe(20)
     expect(response.done).toBe(false)
+  })
+})
+
+describe('Ollama provider compatibility requests', () => {
+  it('sends max_results and propagates the web-search abort signal', async () => {
+    const fetch = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ results: [] }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      }),
+    )
+    const client = new Ollama({ fetch })
+    const abortController = new AbortController()
+
+    await client.webSearch(
+      { query: 'ollama', maxResults: 7 },
+      { signal: abortController.signal },
+    )
+
+    expect(fetch).toHaveBeenCalledWith(
+      'https://ollama.com/api/web_search',
+      expect.objectContaining({
+        body: JSON.stringify({ query: 'ollama', max_results: 7 }),
+        signal: abortController.signal,
+      }),
+    )
+  })
+
+  it('propagates abort signals for embed and web fetch', async () => {
+    const fetch = vi.fn().mockImplementation(async () =>
+      new Response(JSON.stringify({ embeddings: [[0.1]] }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      }),
+    )
+    const client = new Ollama({ fetch })
+    const abortController = new AbortController()
+
+    await client.embed(
+      { model: 'nomic-embed-text', input: 'hello' },
+      { signal: abortController.signal },
+    )
+    await client.webFetch(
+      { url: 'https://example.com' },
+      { signal: abortController.signal },
+    )
+
+    expect(fetch).toHaveBeenNthCalledWith(
+      1,
+      'http://127.0.0.1:11434/api/embed',
+      expect.objectContaining({ signal: abortController.signal }),
+    )
+    expect(fetch).toHaveBeenNthCalledWith(
+      2,
+      'https://ollama.com/api/web_fetch',
+      expect.objectContaining({ signal: abortController.signal }),
+    )
   })
 })
