@@ -34,5 +34,6 @@ redesign of the Ollama JavaScript client.
 2. Rebase a new maintained branch and re-apply still-needed patches.
 3. Run `npm ci`, `npm run lint`, `npm test`, and `npm run build`.
 4. Test the packed artifact with both root and `./browser` imports.
-5. Create a prerelease such as `v0.6.4-maintained.0`.
+5. Publish a prerelease such as `v0.6.4-maintained.0`; the workflow publishes
+   it under npm's `next` tag.
 6. Pin `ai-sdk-ollama` to the exact published version using an npm alias.

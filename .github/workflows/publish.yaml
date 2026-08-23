@@ -3,7 +3,7 @@ name: publish
 on:
   release:
     types:
-      - created
+      - published
 
 jobs:
   publish:
@@ -24,6 +24,6 @@ jobs:
         run: echo "export const version = '${GITHUB_REF_NAME#v}';" > src/version.ts
       - run: |
           npm version --no-git-tag-version ${GITHUB_REF_NAME#v}
-          npm publish --access public --provenance
+          npm publish --access public --provenance --tag next
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
